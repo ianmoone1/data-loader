@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <form id="settings-form">
+    <h4>Path to CSV Files</h4>
+    <div>
+      <label>Path to CSVs</label>
+      <input class="setting-input" name="filePath" id="file-path" />
+    </div>
+    <h4>Students CSV</h4>
+    <div>
+      <label>Student File Name</label>
+      <input class="setting-input" name="studentFileName" id="stu-file-field" />
+    </div>
+    <div>
+      <label>Student Id Field</label>
+      <input class="setting-input" name="studentIdField" id="stu-id-field" />
+    </div>
+    <div>
+      <label>Student Name Field</label>
+      <input class="setting-input" name="studentNameField" id="stu-name-field" />
+    </div>
+    <h4>Preferred Name CSV</h4>
+    <div>
+      <label>Preferred Name File Name</label>
+      <input class="setting-input" name ="studentPrefFileName" id="stu-file-field-2" />
+    </div>
+    <div>
+      <label>Student Id Field</label>
+      <input class="setting-input" name ="studentPrefIdField" id="stu-id-field-2" />
+    </div>
+    <div>
+      <label>Student Preferred name Field</label>
+      <input class="setting-input" name="studentPrefNameField" id="stu-preferred-name"/>
+    </div>
+    <h4>FreshGrade Credentials</h4>
+    <div>
+      <label>FreshGrade Username</label>
+      <input class="setting-input" name="fgUserName" id="fg-user-name" />
+    </div>
+    <div>
+      <label>FreshGrade Password</label>
+      <input class="setting-input" type="password" name="fgPassword" id="fg-user-password" />
+    </div>
+    <input type="Submit" id="submit-settings" value="Save Settings" />
+  </form>
+    <button id="submit-merge-files">Apply Preferred Names</button>
+    <button id="submit-send-fg">Send to FreshGrade</button>
+  </body>
+  <script>
+    const {shell} = require('electron');
+    var ipc = require("electron").ipcRenderer;
+    window.$ = window.jQuery = require('./bower_components/jquery/dist/jquery.js');
+
+    $("#submit-merge-files").click(function(e) {
+      ipc.send('merge-names');
+    });
+
+    $("#settings-form").submit(function(e) {
+      e.preventDefault();
+      var data = objectifyForm($( this ).serializeArray());
+      ipc.send('set-settings', data);
+    });
+
+    $(function(){
+      ipc.send('get-settings');
+    });
+    function objectifyForm(formArray) {//serialize data function
+
+      var returnArray = {};
+      for (var i = 0; i < formArray.length; i++){
+        returnArray[formArray[i]['name']] = formArray[i]['value'];
+      }
+      return returnArray;
+    }
+
+    ipc.on('settings', function(event, arg) {
+      console.log(arg);
+      var $inputs = $('.setting-input');
+      $.each(arg, function(key, value) {
+        $inputs.filter(function() {
+          return key == this.name;
+        }).val(value);
+      });
+    });
+  </script>
+
+</html>

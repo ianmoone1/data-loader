@@ -1,0 +1,13 @@
+{
+  "name": "electron-test",
+  "version": "0.0.0",
+  "authors": [
+    ""
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "~2.1.4",
+    "lodash": "~3.10.1",
+    "components-font-awesome": "*"
+  }
+}
