@@ -1,0 +1,11 @@
+@mixin hook-card() { color: #000; }
+@mixin hook-button(){
+    border-radius: 6px;
+    
+}
+@mixin hook-button-primary(){
+    font-size: 16px;
+}
+@mixin hook-card-default(){
+    border-radius: 4px;
+}

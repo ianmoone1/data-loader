@@ -1,0 +1,46 @@
+html{
+    height: 100%;
+}
+body{
+    background: #C5F3FA;
+    height: inherit;   
+}
+.center{
+    text-align: center;
+}
+.uk-navbar{
+    .uk-navbar-item{
+        &.uk-logo{
+            width: 150px;   
+        }
+    } 
+}
+.uk-card{
+    border-radius: 4px;
+    background: #F6F5F2;
+}
+.tool-tip{
+    margin-left: 10px;
+    margin-top: 3px;
+    vertical-align: top;
+}
+.form-input-container{
+    margin-top: 10px;
+    label{
+        padding-left: 5px;
+    }
+    .setting-input{
+        margin-top: 5px;
+    }
+}
+.uk-offcanvas-bar{
+    .menu-icon{
+        margin-right: 10px;
+    }
+    ul{
+        li{
+            list-style: none;
+            margin-top: 10px;
+        }
+    }
+}

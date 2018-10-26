@@ -1,89 +1,155 @@
 <!DOCTYPE html>
 <html>
   <head>
+      <link rel="stylesheet" href="./src/css/app.css">
+      <script src="./style/uikit/js/uikit.min.js"></script>
+      <script src="./style/uikit/js/uikit-icons.js"></script>
   </head>
   <body>
-    <form id="settings-form">
-    <h4>Path to CSV Files</h4>
-    <div>
-      <label>Path to CSVs</label>
-      <input class="setting-input" name="filePath" id="file-path" />
+	<nav class="uk-navbar uk-navbar-container uk-margin">
+		<div class="uk-navbar-left">
+			<a class="uk-navbar-toggle"uk-toggle="target: #offcanvas-usage">
+				<span uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span>
+			</a>
+		</div>
+		<div class="uk-navbar-center">
+			<img class="uk-navbar-item uk-logo" src="./assets/images/logo-light-blue.png" />
+		</div>
+	</nav>
+    <div class="uk-offcanvas-content">
+        <!-- The whole page content goes here -->
+    
+        <div id="offcanvas-usage" uk-offcanvas>
+            <div class="uk-offcanvas-bar">
+				<button class="uk-offcanvas-close" type="button" uk-close></button>
+				<ul>
+					<li><span class="active menu-icon" uk-icon="move"></span><a href="./index.html">Preferred Names</a></li>
+					<li><span class="menu-icon" uk-icon="cog"></span><a href="./settings.html">Settings</a></li>
+				</ul>
+				
+            </div>
+        </div>
     </div>
-    <h4>Students CSV</h4>
-    <div>
-      <label>Student File Name</label>
-      <input class="setting-input" name="studentFileName" id="stu-file-field" />
-    </div>
-    <div>
-      <label>Student Id Field</label>
-      <input class="setting-input" name="studentIdField" id="stu-id-field" />
-    </div>
-    <div>
-      <label>Student Name Field</label>
-      <input class="setting-input" name="studentNameField" id="stu-name-field" />
-    </div>
-    <h4>Preferred Name CSV</h4>
-    <div>
-      <label>Preferred Name File Name</label>
-      <input class="setting-input" name ="studentPrefFileName" id="stu-file-field-2" />
-    </div>
-    <div>
-      <label>Student Id Field</label>
-      <input class="setting-input" name ="studentPrefIdField" id="stu-id-field-2" />
-    </div>
-    <div>
-      <label>Student Preferred name Field</label>
-      <input class="setting-input" name="studentPrefNameField" id="stu-preferred-name"/>
-    </div>
-    <h4>FreshGrade Credentials</h4>
-    <div>
-      <label>FreshGrade Username</label>
-      <input class="setting-input" name="fgUserName" id="fg-user-name" />
-    </div>
-    <div>
-      <label>FreshGrade Password</label>
-      <input class="setting-input" type="password" name="fgPassword" id="fg-user-password" />
-    </div>
-    <input type="Submit" id="submit-settings" value="Save Settings" />
-  </form>
-    <button id="submit-merge-files">Apply Preferred Names</button>
-    <button id="submit-send-fg">Send to FreshGrade</button>
+    <div class="uk-container">
+      	<form id="preferred-form">
+        	<div class="uk-flex uk-flex-center uk-margin-top">
+				<div class="uk-width-1-1 uk-card uk-card-default uk-card-body">
+					<h4>Preferred Name CSV Settings</h4>
+					<div class="form-input-container">
+						<label>Preferred Name File Name</label><span class="tool-tip" uk-tooltip="Change this value to the name of the file that contains the preferred names of the students. Must include extension (.txt, .csv)" uk-icon="info"></span>
+						<input class="setting-input uk-input" name ="studentPrefFileName" id="stu-file-field-2" />
+					</div>
+					<div class="form-input-container">
+						<label>Student Id Field</label><span class="tool-tip" uk-tooltip="Enter the field name in the preferred name file that maps to the student_sis_id " uk-icon="info"></span>
+						<input class="setting-input uk-input" name ="studentPrefIdField" id="stu-id-field-2" />
+					</div>
+					<div class="form-input-container">
+						<label>Student Preferred First Name Field</label><span class="tool-tip" uk-tooltip="The name of the column that holds the students preferred first name" uk-icon="info"></span>
+						<input class="setting-input uk-input" name="studentPrefFirstNameField" id="stu-preferred-first-name"/>
+					</div>
+					<div class="form-input-container">
+						<label>Student Preferred Middle Name Field</label><span class="tool-tip" uk-tooltip="The name of the column that holds the students preferred middle name" uk-icon="info"></span>
+						<input class="setting-input uk-input" name="studentPrefMiddleNameField" id="stu-preferred-middle-name"/>
+					</div>
+					<div class="form-input-container">
+						<label>Student Preferred Last Name Field</label><span class="tool-tip" uk-tooltip="The name of the column that holds the students preferred last name" uk-icon="info"></span>
+						<input class="setting-input uk-input" name="studentPrefLastNameField" id="stu-preferred-last-name"/>
+					</div>
+					<div class="center uk-margin-top">
+						<button type="Submit" class="uk-button uk-button-primary" id="submit-merge-files">Apply Preferred Names</button>
+						<button class="uk-button uk-button-primary" id="submit-send-files">Apply and Send to FreshGrade</button>
+					</div>
+					
+				</div>
+				
+        	</div>
+			<div class="uk-flex uk-flex-center uk-margin-top ">
+				
+
+			</div>
+			
+      </form>
+	</div>
+	<div id="message-modal" uk-modal>
+		<div class="uk-modal-dialog uk-modal-body">
+			<button class="uk-modal-close-default" type="button" uk-close></button>
+			<h2 class="uk-modal-title"></h2>
+			<p></p>
+		</div>
+	</div>
   </body>
+
   <script>
     const {shell} = require('electron');
     var ipc = require("electron").ipcRenderer;
     window.$ = window.jQuery = require('./bower_components/jquery/dist/jquery.js');
 
-    $("#submit-merge-files").click(function(e) {
-      ipc.send('merge-names');
+    $("#submit-send-files").click(function(e) {
+      	console.log('sending files');
+      	ipc.send('send-files');
     });
 
-    $("#settings-form").submit(function(e) {
-      e.preventDefault();
-      var data = objectifyForm($( this ).serializeArray());
-      ipc.send('set-settings', data);
+    $("#preferred-form").submit(function(e) {
+      	e.preventDefault();
+		var data = objectifyForm($( this ).serializeArray());
+		ipc.send('set-settings', data);
+		ipc.send('merge-names');
     });
 
     $(function(){
-      ipc.send('get-settings');
+		ipc.send('get-settings');
     });
+
     function objectifyForm(formArray) {//serialize data function
 
-      var returnArray = {};
-      for (var i = 0; i < formArray.length; i++){
-        returnArray[formArray[i]['name']] = formArray[i]['value'];
-      }
-      return returnArray;
+    	var returnArray = {};
+      	for (var i = 0; i < formArray.length; i++){
+        	returnArray[formArray[i]['name']] = formArray[i]['value'];
+      	}
+      	return returnArray;
+	}
+	
+    function setFilePath(){
+      	ipc.send('selectDirectory');
     }
 
+    ipc.on('set-file-path', function(event, arg) {
+      	$.each(arg, function(key, value) {
+        	console.log(arg);
+        	$('#file-path').val(arg);
+      	});
+    });
+
     ipc.on('settings', function(event, arg) {
-      console.log(arg);
-      var $inputs = $('.setting-input');
-      $.each(arg, function(key, value) {
-        $inputs.filter(function() {
-          return key == this.name;
-        }).val(value);
-      });
+      	console.log(arg);
+      	var $inputs = $('.setting-input');
+      	$.each(arg, function(key, value) {
+        	$inputs.filter(function() {
+          	return key == this.name;
+        	}).val(value);
+      	});
+	});
+	
+	ipc.on('message-success', function(event, arg) {
+		// var namesModal = UIkit.modal('#message-modal');
+		// namesModal.show(); 
+		// $('#message-modal .uk-modal-title').html('Success');
+		// $('#message-modal p').html(arg);
+		// console.log(arg);
+		UIkit.notification({
+			message: arg,
+			status: 'primary',
+			pos: 'top-center',
+			timeout: 5000
+		});
+	});
+
+	ipc.on('message-error', function(event, arg) {
+		var namesModal = UIkit.modal('#message-modal');
+		namesModal.show(); 
+		$('#message-modal .uk-modal-title').html('Error');
+		$('#message-modal p').html(arg);
+		console.log(arg);
     });
   </script>
 

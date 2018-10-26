@@ -1,0 +1,13 @@
+// 1. Your custom variables and variable overwrites.
+$button-primary-background: #51bf51;
+
+// 2. Import default variables and available mixins.
+@import "../uikit/variables-theme.scss";
+@import "../uikit/mixins-theme.scss";
+
+// 3. Your custom mixin overwrites.
+@import 'mixins';
+// 4. Import UIkit.
+@import "../uikit/uikit-theme.scss";
+@import 'main';
+@import 'typography';
