@@ -6,46 +6,63 @@
       <script src="./style/uikit/js/uikit-icons.js"></script>
   </head>
   <body>
+	<nav class="uk-navbar uk-navbar-container uk-margin">
+		<div class="uk-navbar-left">
+			<a class="uk-navbar-toggle"uk-toggle="target: #offcanvas-usage">
+				<span uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span>
+			</a>
+		</div>
+		<div class="uk-navbar-center">
+			<img class="uk-navbar-item uk-logo" src="./assets/images/logo-light-blue.png" />
+		</div>
+	</nav>
     <div class="uk-offcanvas-content">
-
         <!-- The whole page content goes here -->
-
-        <a uk-icon="menu" type="button" uk-toggle="target: #offcanvas-usage"></a>
-
-
+    
         <div id="offcanvas-usage" uk-offcanvas>
             <div class="uk-offcanvas-bar">
-
-                <button class="uk-offcanvas-close" type="button" uk-close></button>
-				<a href="./index.html">Preferred Names</a>
-        		<a href="./settings.html">Settings</a>
-
+				<button class="uk-offcanvas-close" type="button" uk-close></button>
+				<ul>
+					<li><span class="active menu-icon" uk-icon="move"></span><a href="./index.html">Preferred Names</a></li>
+					<li><span class="menu-icon" uk-icon="cog"></span><a href="./settings.html">Settings</a></li>
+				</ul>
             </div>
         </div>
-
     </div>
     <div class="uk-container">
-      	<form id="settings-form ">
-			<h4>FreshGrade Credentials</h4>
-			<div>
-				<label>FreshGrade Username</label>
-				<input class="setting-input uk-input" name="fgUserName" id="fg-user-name" />
+      	<form id="settings-form">
+			<div class="uk-flex uk-flex-center uk-margin-top">
+				<div class="uk-width-1-1 uk-card uk-card-default uk-card-body">
+					<h4>FreshGrade Credentials</h4>
+					<div class="form-input-container">
+						<label>FreshGrade Username</label><span class="tool-tip" uk-tooltip="Username to FreshGrade integration dashboard (Supplied by FreshGrade)" uk-icon="info"></span>
+						<input class="setting-input uk-input" name="fgUserName" id="fg-user-name" />
+					</div>
+					<div class="form-input-container">
+						<label>FreshGrade Password</label><span class="tool-tip" uk-tooltip="Password to FreshGrade integration dashboard" uk-icon="info"></span>
+						<input class="setting-input uk-input" type="password" name="fgPassword" id="fg-user-password" />
+					</div>
+					<h4>Path to CSV Files</h4>
+					<div class="form-input-container">
+						<label>Path to CSVs</label><span class="tool-tip" uk-tooltip="Supply the path to your CSV export files" uk-icon="info"></span>
+						<input class="setting-input uk-input" name="filePath" id="file-path" disabled />
+						<div class="folder-nav-container">
+							<span uk-icon="folder"></span><a onclick="setFilePath()" >Change file path</a>
+						</div>
+						
+					</div>
+					<h4>Notification Email</h4>
+					<div class="form-input-container">
+						<label>Email Address</label><span class="tool-tip" uk-tooltip="The email address to be notified when imports complete or fail (limit 1)" uk-icon="info"></span>
+						<input class="setting-input uk-input" name="notificationEmail" id="notificationEmail" />
+					</div>
+					<div class="center uk-margin-top">
+						<input type="Submit" class="uk-button uk-button-primary uk-margin" id="submit-settings" value="Save Settings" />
+					</div>
+				</div>
 			</div>
-			<div>
-				<label>FreshGrade Password</label>
-				<input class="setting-input uk-input" type="password" name="fgPassword" id="fg-user-password" />
-			</div>
-			<h4>Path to CSV Files</h4>
-			<div>
-				<label>Path to CSVs</label>
-				<input class="setting-input uk-input" name="filePath" id="file-path" disabled />
-				<span uk-icon="folder"></span><a onclick="setFilePath()" >Change file path</a>
-			</div>
-		
-			<input type="Submit" class="uk-button uk-button-primary uk-margin" id="submit-settings" value="Save Settings" />
-      	</form>
+		</form>
     </div>
-
   </body>
 
   <script>
@@ -55,46 +72,49 @@
 	
 	$(function(){
       	ipc.send('get-settings');
-
     });
 
     $("#settings-form").submit(function(e) {
-		console.log(e);
-      e.preventDefault();
-      var data = objectifyForm($( this ).serializeArray());
-      ipc.send('set-settings', data);
+		e.preventDefault();
+		var inputs = 	$( this ).serializeArray();
+		//get disabled input
+		$(':disabled[name]', this).each(function () { 
+            inputs.push({ name: this.name, value: $(this).val() });
+        });
+		var data = objectifyForm(inputs);
+		
+	  	console.log(data);
+		ipc.send('set-settings', data);
     });
 
-
     function objectifyForm(formArray) {//serialize data function
-      var returnArray = {};
-      for (var i = 0; i < formArray.length; i++){
-        returnArray[formArray[i]['name']] = formArray[i]['value'];
-      }
-      return returnArray;
+      	var returnArray = {};
+      	for (var i = 0; i < formArray.length; i++){
+        	returnArray[formArray[i]['name']] = formArray[i]['value'];
+      	}
+      	return returnArray;
 	}
 	
     function setFilePath(){
-      ipc.send('selectDirectory');
+      	ipc.send('selectDirectory');
     }
 
     ipc.on('set-file-path', function(event, arg) {
-      $.each(arg, function(key, value) {
-        console.log(arg);
-        $('#file-path').val(arg);
-      });
-      // $('#settings-form').click();
+      	$.each(arg, function(key, value) {
+        	console.log(arg);
+        	$('#file-path').val(arg);
+      	});
+      	// $('#settings-form').click();
     });
 
     ipc.on('settings', function(event, arg) {
-      console.log(arg);
-      var $inputs = $('.setting-input');
-      $.each(arg, function(key, value) {
-        $inputs.filter(function() {
-          return key == this.name;
-        }).val(value);
-      });
+      	console.log(arg);
+      	var $inputs = $('.setting-input');
+      	$.each(arg, function(key, value) {
+        	$inputs.filter(function() {
+          	return key == this.name;
+        	}).val(value);
+      	});
 	});
   </script>
-
 </html>

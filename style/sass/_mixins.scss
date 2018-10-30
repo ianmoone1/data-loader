@@ -9,3 +9,11 @@
 @mixin hook-card-default(){
     border-radius: 4px;
 }
+
+@mixin hook-notification(){
+    width: 100%;
+    &.uk-notification-top-center{
+        left: 0;
+        margin-left: 0;
+    }
+}

@@ -17,7 +17,6 @@ export class Name{
 
     mergeNames(){
         return this.mergePreferredNames();
-        
     }
 
     zipFiles(){
@@ -36,32 +35,39 @@ export class Name{
                 .then((demoObj: String[])=>{
                     let  demoFilterObj =  demoObj.filter(
                         (it) => {
-                            return it[this.settings.studentPrefNameField] != '';
+                            if(it[this.settings.studentPrefFirstNameField] != '' || it[this.settings.studentPrefMiddleNameField] != '' || it[this.settings.studentPrefLastNameField] != ''){
+                                return it;
+                            }
                         }
                     );
                     demoFilterObj.forEach((demoFilterObj) => {
-                        let test: any =  stuObj.filter(
+                        if(demoFilterObj[this.settings.studentPrefIdField] == null){
+                            let error = new Error ('Student Id field does not match a column in the preferred names file');
+                            reject(
+                                error
+                            );
+                        }
+                        let students: any =  stuObj.filter(
                             (it) => {
                                 return it[this.settings.studentIdField] == demoFilterObj[this.settings.studentPrefIdField];
                             }
                         );
-                        test.forEach((test: any) =>{
-                            test['sis_student_preferred_name'] = demoFilterObj[this.settings.studentPrefFirstNameField];
-                            test['sis_student_preferred_middle_name'] = demoFilterObj[this.settings.studentPrefMiddleNameField];
-                            test['sis_student_preferred_last_name'] = demoFilterObj[this.settings.studentPrefLastNameField];
+                        students.forEach((student: any) =>{
+                            student['usualFirstName'] = demoFilterObj[this.settings.studentPrefFirstNameField];
+                            student['usualMiddleName'] = demoFilterObj[this.settings.studentPrefMiddleNameField];
+                            student['usualSurname'] = demoFilterObj[this.settings.studentPrefLastNameField];
                         });
                     });
                     this.jsonexport(stuObj,(err: any, csv: any) =>{
                         if(err) return console.log(err);
-                        // console.log(csv);
-                        fs.writeFile(this.settings.filePath + '/students-new.csv', csv, 'utf8', (err: any) => {
-                          if (err) {
-                            console.log('Some error occured - file either not saved or corrupted file saved.');
-                          } else{
-                            resolve({
-                                status: 'merging...'
-                            });
-                          }
+                        fs.writeFile(this.settings.filePath + '/StudentCourseSelection.txt', csv, 'utf8', (err: any) => {
+                            if (err) {
+                                console.log('Some error occured - file either not saved or corrupted file saved.');
+                            } else{
+                                resolve({
+                                    status: 'merging...'
+                                });
+                            }
                         });
                     });
                 });
@@ -93,12 +99,13 @@ export class Name{
             archive.pipe(output);
         
             // append files
-            archive.file(this.settings.filePath + '/teachers.csv', {name: '/teachers.csv'});
-            archive.file(this.studentscsvFilePath, {name: '/students.csv'});
-            archive.file(this.settings.filePath + '/sections.csv', {name: '/sections.csv'});
-            archive.file(this.settings.filePath + '/schools.csv', {name: '/schools.csv'});
-            archive.file(this.settings.filePath + '/parents.csv', {name: '/parents.csv'});
-            archive.file(this.settings.filePath + '/enrollments.csv', {name: '/enrollments.csv'});
+            archive.file(this.settings.filePath + '/ClassInformation.txt', {name: '/ClassInformation.txt'});
+            archive.file(this.settings.filePath + '/StudentCourseSelection.txt', {name: '/StudentCourseSelection.txt'});
+            archive.file(this.settings.filePath + '/CourseInformation.txt', {name: '/CourseInformation.txt'});
+            archive.file(this.settings.filePath + '/ParentInformation.txt', {name: '/ParentInformation.txt'});
+            archive.file(this.settings.filePath + '/SchoolDetails.txt', {name: '/SchoolDetails.txt'});
+            archive.file(this.settings.filePath + '/StaffInformation.txt', {name: '/StaffInformation.txt'});
+
         
             archive.finalize();
 

@@ -15,18 +15,22 @@ export class Store {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
     // We'll use the `configName` property to set the file name and path.join to bring it all together as a string
     this.path = this.path.join(userDataPath, opts.configName + '.json');
-    console.log(this.path);
     this.data = parseDataFile(this.path, opts.defaults);
   }
 
   // This will just return the property on the `data` object
   get(key: any) {
-    return this.data[key];
+    if(key == 'all'){
+      return this.data['settings'];
+    }else{
+      return this.data['settings'][key];
+    }
+    
   }
 
   // ...and this will set it
   set(key: any, val: String) {
-    this.data[key] = val;
+    this.data['settings'][key] = val;
     fs.writeFileSync(this.path, JSON.stringify(this.data));
   }
 }
